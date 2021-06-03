@@ -3,21 +3,23 @@ import {
 } from 'n8n-core';
 import {
 	IDataObject,
-	INodeTypeDescription,
 	INodeExecutionData,
 	INodeType,
+	INodeTypeDescription,
+	NodeApiError,
+	NodeOperationError,
 } from 'n8n-workflow';
 import {
-	veroApiRequest,
 	validateJSON,
+	veroApiRequest,
 } from './GenericFunctions';
 import {
-	userOperations,
 	userFields,
+	userOperations,
 } from './UserDescription';
 import {
+	eventFields,
 	eventOperations,
-	eventFields
 } from './EventDescripion';
 
 export class Vero implements INodeType {
@@ -39,7 +41,7 @@ export class Vero implements INodeType {
 			{
 				name: 'veroApi',
 				required: true,
-			}
+			},
 		],
 		properties: [
 			{
@@ -50,12 +52,12 @@ export class Vero implements INodeType {
 					{
 						name: 'User',
 						value: 'user',
-						description: `Lets you create, update and manage the subscription status of your users.`,
+						description: `Create, update and manage the subscription status of your users.`,
 					},
 					{
 						name: 'Event',
 						value: 'event',
-						description: `Lets you track events based on actions your customers take in real time.`,
+						description: `Track events based on actions your customers take in real time.`,
 					},
 				],
 				default: 'user',
@@ -110,8 +112,8 @@ export class Vero implements INodeType {
 					}
 					try {
 						responseData = await veroApiRequest.call(this, 'POST', '/users/track', body);
-					} catch (err) {
-						throw new Error(`Vero Error: ${err}`);
+					} catch (error) {
+						throw new NodeApiError(this.getNode(), error);
 					}
 				}
 				//https://developers.getvero.com/?bash#users-alias
@@ -124,8 +126,8 @@ export class Vero implements INodeType {
 					};
 					try {
 						responseData = await veroApiRequest.call(this, 'PUT', '/users/reidentify', body);
-					} catch (err) {
-						throw new Error(`Vero Error: ${err}`);
+					} catch (error) {
+						throw new NodeApiError(this.getNode(), error);
 					}
 				}
 				//https://developers.getvero.com/?bash#users-unsubscribe
@@ -140,8 +142,8 @@ export class Vero implements INodeType {
 					};
 					try {
 						responseData = await veroApiRequest.call(this, 'POST', `/users/${operation}`, body);
-					} catch (err) {
-						throw new Error(`Vero Error: ${err}`);
+					} catch (error) {
+						throw new NodeApiError(this.getNode(), error);
 					}
 				}
 				//https://developers.getvero.com/?bash#tags-add
@@ -163,8 +165,8 @@ export class Vero implements INodeType {
 					}
 					try {
 						responseData = await veroApiRequest.call(this, 'PUT', '/users/tags/edit', body);
-					} catch (err) {
-						throw new Error(`Vero Error: ${err}`);
+					} catch (error) {
+						throw new NodeApiError(this.getNode(), error);
 					}
 				}
 			}
@@ -216,8 +218,8 @@ export class Vero implements INodeType {
 					}
 					try {
 						responseData = await veroApiRequest.call(this, 'POST', '/events/track', body);
-					} catch (err) {
-						throw new Error(`Vero Error: ${err}`);
+					} catch (error) {
+						throw new NodeApiError(this.getNode(), error);
 					}
 				}
 			}

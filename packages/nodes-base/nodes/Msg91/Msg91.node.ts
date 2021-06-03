@@ -4,6 +4,7 @@ import {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
+	NodeOperationError,
 } from 'n8n-workflow';
 
 import {
@@ -13,7 +14,7 @@ import {
 
 export class Msg91 implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Msg91',
+		displayName: 'MSG91',
 		name: 'msg91',
 		icon: 'file:msg91.png',
 		group: ['transform'],
@@ -30,7 +31,7 @@ export class Msg91 implements INodeType {
 			{
 				name: 'msg91Api',
 				required: true,
-			}
+			},
 		],
 		properties: [
 			{
@@ -68,7 +69,7 @@ export class Msg91 implements INodeType {
 				description: 'The operation to perform.',
 			},
 			{
-				displayName: 'From',
+				displayName: 'Sender ID',
 				name: 'from',
 				type: 'string',
 				default: '',
@@ -123,7 +124,7 @@ export class Msg91 implements INodeType {
 				},
 				description: 'The message to send',
 			},
-		]
+		],
 	};
 
 
@@ -167,10 +168,10 @@ export class Msg91 implements INodeType {
 					qs.message = this.getNodeParameter('message', i) as string;
 
 				} else {
-					throw new Error(`The operation "${operation}" is not known!`);
+					throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not known!`);
 				}
 			} else {
-				throw new Error(`The resource "${resource}" is not known!`);
+				throw new NodeOperationError(this.getNode(), `The resource "${resource}" is not known!`);
 			}
 
 			const responseData = await msg91ApiRequest.call(this, requestMethod, endpoint, body, qs);

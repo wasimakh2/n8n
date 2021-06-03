@@ -4,22 +4,23 @@
 		<executions-list :dialogVisible="executionsListDialogVisible" @closeDialog="closeExecutionsListOpenDialog"></executions-list>
 		<credentials-list :dialogVisible="credentialOpenDialogVisible" @closeDialog="closeCredentialOpenDialog"></credentials-list>
 		<credentials-edit :dialogVisible="credentialNewDialogVisible" @closeDialog="closeCredentialNewDialog"></credentials-edit>
-		<workflow-open @openWorkflow="openWorkflow" :dialogVisible="workflowOpenDialogVisible" @closeDialog="closeWorkflowOpenDialog"></workflow-open>
 		<workflow-settings :dialogVisible="workflowSettingsDialogVisible" @closeDialog="closeWorkflowSettingsDialog"></workflow-settings>
 		<input type="file" ref="importFile" style="display: none" v-on:change="handleFileImport()">
 
 		<div class="side-menu-wrapper" :class="{expanded: !isCollapsed}">
-			<div id="collapse-change-button" class="clickable" @click="isCollapsed=!isCollapsed">
+			<div id="collapse-change-button" class="clickable" @click="toggleCollapse">
 				<font-awesome-icon icon="angle-right" class="icon" />
 			</div>
 			<el-menu default-active="workflow" @select="handleSelect" :collapse="isCollapsed">
 
 				<el-menu-item index="logo" class="logo-item">
 					<a href="https://n8n.io" target="_blank" class="logo">
-						<img src="/n8n-icon-small.png" class="icon" alt="n8n.io"/>
+						<img :src="basePath + 'n8n-icon-small.png'" class="icon" alt="n8n.io"/>
 						<span class="logo-text" slot="title">n8n.io</span>
 					</a>
 				</el-menu-item>
+
+				<MenuItemsIterator :items="sidebarMenuTopItems" :root="true"/>
 
 				<el-submenu index="workflow" title="Workflow">
 					<template slot="title">
@@ -39,22 +40,16 @@
 							<span slot="title" class="item-title">Open</span>
 						</template>
 					</el-menu-item>
-					<el-menu-item index="workflow-save" :disabled="!currentWorkflow">
+					<el-menu-item index="workflow-save">
 						<template slot="title">
 							<font-awesome-icon icon="save"/>
 							<span slot="title" class="item-title">Save</span>
 						</template>
 					</el-menu-item>
-					<el-menu-item index="workflow-save-as">
+					<el-menu-item index="workflow-duplicate" :disabled="!currentWorkflow">
 						<template slot="title">
 							<font-awesome-icon icon="copy"/>
-							<span slot="title" class="item-title">Save As</span>
-						</template>
-					</el-menu-item>
-					<el-menu-item index="workflow-rename" :disabled="!currentWorkflow">
-						<template slot="title">
-							<font-awesome-icon icon="edit"/>
-							<span slot="title" class="item-title">Rename</span>
+							<span slot="title" class="item-title">Duplicate</span>
 						</template>
 					</el-menu-item>
 					<el-menu-item index="workflow-delete" :disabled="!currentWorkflow">
@@ -120,30 +115,8 @@
 						<span slot="title" class="item-title-root">Help</span>
 					</template>
 
-					<el-menu-item index="help-documentation">
-						<template slot="title">
-							<a href="https://docs.n8n.io" target="_blank">
-								<font-awesome-icon icon="book"/>
-								<span slot="title" class="item-title">Documentation</span>
-							</a>
-						</template>
-					</el-menu-item>
-					<el-menu-item index="help-forum">
-						<template slot="title">
-							<a href="https://community.n8n.io" target="_blank">
-								<font-awesome-icon icon="users"/>
-								<span slot="title" class="item-title">Forum</span>
-							</a>
-						</template>
-					</el-menu-item>
-					<el-menu-item index="help-examples">
-						<template slot="title">
-							<a href="https://n8n.io/workflows" target="_blank">
-								<font-awesome-icon icon="network-wired"/>
-								<span slot="title" class="item-title">Workflows</span>
-							</a>
-						</template>
-					</el-menu-item>
+					<MenuItemsIterator :items="helpMenuItems" />
+
 					<el-menu-item index="help-about">
 						<template slot="title">
 							<font-awesome-icon class="about-icon" icon="info"/>
@@ -151,6 +124,8 @@
 						</template>
 					</el-menu-item>
 				</el-submenu>
+
+				<MenuItemsIterator :items="sidebarMenuBottomItems" :root="true"/>
 
 			</el-menu>
 
@@ -160,40 +135,75 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+
 import { MessageBoxInputData } from 'element-ui/types/message-box';
 
 import {
 	IExecutionResponse,
 	IExecutionsStopData,
 	IWorkflowDataUpdate,
+	IMenuItem,
 } from '../Interface';
 
 import About from '@/components/About.vue';
 import CredentialsEdit from '@/components/CredentialsEdit.vue';
 import CredentialsList from '@/components/CredentialsList.vue';
 import ExecutionsList from '@/components/ExecutionsList.vue';
-import WorkflowOpen from '@/components/WorkflowOpen.vue';
 import WorkflowSettings from '@/components/WorkflowSettings.vue';
 
 import { genericHelpers } from '@/components/mixins/genericHelpers';
 import { restApi } from '@/components/mixins/restApi';
 import { showMessage } from '@/components/mixins/showMessage';
+import { titleChange } from '@/components/mixins/titleChange';
 import { workflowHelpers } from '@/components/mixins/workflowHelpers';
-import { workflowSave } from '@/components/mixins/workflowSave';
 import { workflowRun } from '@/components/mixins/workflowRun';
 
 import { saveAs } from 'file-saver';
 
 import mixins from 'vue-typed-mixins';
+import { mapGetters } from 'vuex';
+import MenuItemsIterator from './MainSidebarMenuItemsIterator.vue';
+
+const helpMenuItems: IMenuItem[] = [
+	{
+		id: 'docs',
+		type: 'link',
+		properties: {
+			href: 'https://docs.n8n.io',
+			title: 'Documentation',
+			icon: 'book',
+			newWindow: true,
+		},
+	},
+	{
+		id: 'forum',
+		type: 'link',
+		properties: {
+			href: 'https://community.n8n.io',
+			title: 'Forum',
+			icon: 'users',
+			newWindow: true,
+		},
+	},
+	{
+		id: 'examples',
+		type: 'link',
+		properties: {
+			href: 'https://n8n.io/workflows',
+			title: 'Workflows',
+			icon: 'network-wired',
+			newWindow: true,
+		},
+	},
+];
 
 export default mixins(
 	genericHelpers,
 	restApi,
 	showMessage,
+	titleChange,
 	workflowHelpers,
 	workflowRun,
-	workflowSave,
 )
 	.extend({
 		name: 'MainHeader',
@@ -202,22 +212,26 @@ export default mixins(
 			CredentialsEdit,
 			CredentialsList,
 			ExecutionsList,
-			WorkflowOpen,
 			WorkflowSettings,
+			MenuItemsIterator,
 		},
 		data () {
 			return {
 				aboutDialogVisible: false,
-				isCollapsed: true,
+				// @ts-ignore
+				basePath: this.$store.getters.getBaseUrl,
 				credentialNewDialogVisible: false,
 				credentialOpenDialogVisible: false,
 				executionsListDialogVisible: false,
 				stopExecutionInProgress: false,
-				workflowOpenDialogVisible: false,
 				workflowSettingsDialogVisible: false,
+				helpMenuItems,
 			};
 		},
 		computed: {
+			...mapGetters('ui', {
+				isCollapsed: 'sidebarMenuCollapsed',
+			}),
 			exeuctionId (): string | undefined {
 				return this.$route.params.id;
 			},
@@ -264,17 +278,23 @@ export default mixins(
 			workflowRunning (): boolean {
 				return this.$store.getters.isActionActive('workflowRunning');
 			},
+			sidebarMenuTopItems(): IMenuItem[] {
+				return this.$store.getters.sidebarMenuItems.filter((item: IMenuItem) => item.position === 'top');
+			},
+			sidebarMenuBottomItems(): IMenuItem[] {
+				return this.$store.getters.sidebarMenuItems.filter((item: IMenuItem) => item.position === 'bottom');
+			},
 		},
 		methods: {
+			toggleCollapse () {
+				this.$store.commit('ui/toggleSidebarMenuCollapse');
+			},
 			clearExecutionData () {
 				this.$store.commit('setWorkflowExecutionData', null);
 				this.updateNodesExecutionIssues();
 			},
 			closeAboutDialog () {
 				this.aboutDialogVisible = false;
-			},
-			closeWorkflowOpenDialog () {
-				this.workflowOpenDialogVisible = false;
 			},
 			closeWorkflowSettingsDialog () {
 				this.workflowSettingsDialogVisible = false;
@@ -287,6 +307,9 @@ export default mixins(
 			},
 			closeCredentialNewDialog () {
 				this.credentialNewDialogVisible = false;
+			},
+			openTagManager() {
+				this.$store.dispatch('ui/openTagsManagerModal');
 			},
 			async stopExecution () {
 				const executionId = this.$store.getters.activeExecutionId;
@@ -314,7 +337,7 @@ export default mixins(
 					params: { name: workflowId },
 				});
 
-				this.workflowOpenDialogVisible = false;
+				this.$store.commit('ui/closeTopModal');
 			},
 			async handleFileImport () {
 				const reader = new FileReader();
@@ -344,7 +367,7 @@ export default mixins(
 			},
 			async handleSelect (key: string, keyPath: string) {
 				if (key === 'workflow-open') {
-					this.workflowOpenDialogVisible = true;
+					this.$store.dispatch('ui/openWorklfowOpenModal');
 				} else if (key === 'workflow-import-file') {
 					(this.$refs.importFile as HTMLInputElement).click();
 				} else if (key === 'workflow-import-url') {
@@ -358,49 +381,6 @@ export default mixins(
 
 						this.$root.$emit('importWorkflowUrl', { url: promptResponse.value });
 					} catch (e) {}
-				} else if (key === 'workflow-rename') {
-					const workflowName = await this.$prompt(
-						'Enter new workflow name',
-						'Rename',
-						{
-							inputValue: this.workflowName,
-							confirmButtonText: 'Rename',
-							cancelButtonText: 'Cancel',
-						},
-					)
-						.then((data) => {
-							// @ts-ignore
-							return data.value;
-						})
-						.catch(() => {
-							// User did cancel
-							return undefined;
-						});
-
-					if (workflowName === undefined || workflowName === this.workflowName) {
-						return;
-					}
-
-					const workflowId = this.$store.getters.workflowId;
-
-					const updateData = {
-						name: workflowName,
-					};
-
-					try {
-						await this.restApi().updateWorkflow(workflowId, updateData);
-					} catch (error) {
-						this.$showError(error, 'Problem renaming the workflow', 'There was a problem renaming the workflow:');
-						return;
-					}
-
-					this.$store.commit('setWorkflowName', workflowName);
-
-					this.$showMessage({
-						title: 'Workflow renamed',
-						message: `The workflow got renamed to "${workflowName}"!`,
-						type: 'success',
-					});
 				} else if (key === 'workflow-delete') {
 					const deleteConfirmed = await this.confirmMessage(`Are you sure that you want to delete the workflow "${this.workflowName}"?`, 'Delete Workflow?', 'warning', 'Yes, delete!');
 
@@ -415,7 +395,8 @@ export default mixins(
 						this.$showError(error, 'Problem deleting the workflow', 'There was a problem deleting the workflow:');
 						return;
 					}
-
+					// Reset tab title since workflow is deleted.
+					this.$titleReset();
 					this.$showMessage({
 						title: 'Workflow got deleted',
 						message: `The workflow "${this.workflowName}" got deleted!`,
@@ -425,7 +406,9 @@ export default mixins(
 					this.$router.push({ name: 'NodeViewNew' });
 				} else if (key === 'workflow-download') {
 					const workflowData = await this.getWorkflowDataToSave();
-					const blob = new Blob([JSON.stringify(workflowData, null, 2)], {
+
+					const {tags, ...data} = workflowData;
+					const blob = new Blob([JSON.stringify(data, null, 2)], {
 						type: 'application/json;charset=utf-8',
 					});
 
@@ -436,20 +419,36 @@ export default mixins(
 					saveAs(blob, workflowName + '.json');
 				} else if (key === 'workflow-save') {
 					this.saveCurrentWorkflow();
-				} else if (key === 'workflow-save-as') {
-					this.saveCurrentWorkflow(true);
+				} else if (key === 'workflow-duplicate') {
+					this.$store.dispatch('ui/openDuplicateModal');
 				} else if (key === 'help-about') {
 					this.aboutDialogVisible = true;
 				} else if (key === 'workflow-settings') {
 					this.workflowSettingsDialogVisible = true;
 				} else if (key === 'workflow-new') {
-					this.$router.push({ name: 'NodeViewNew' });
+					const result = this.$store.getters.getStateIsDirty;
+					if(result) {
+						const importConfirm = await this.confirmMessage(`When you switch workflows your current workflow changes will be lost.`, 'Save your Changes?', 'warning', 'Yes, switch workflows and forget changes');
+						if (importConfirm === true) {
+							this.$store.commit('setStateDirty', false);
+							this.$router.push({ name: 'NodeViewNew' });
 
-					this.$showMessage({
-						title: 'Workflow created',
-						message: 'A new workflow got created!',
-						type: 'success',
-					});
+							this.$showMessage({
+								title: 'Workflow created',
+								message: 'A new workflow got created!',
+								type: 'success',
+							});
+						}
+					} else {
+						this.$router.push({ name: 'NodeViewNew' });
+
+						this.$showMessage({
+							title: 'Workflow created',
+							message: 'A new workflow got created!',
+							type: 'success',
+						});
+					}
+					this.$titleReset();
 				} else if (key === 'credentials-open') {
 					this.credentialOpenDialogVisible = true;
 				} else if (key === 'credentials-new') {
@@ -462,11 +461,6 @@ export default mixins(
 					this.executionsListDialogVisible = true;
 				}
 			},
-		},
-		async mounted () {
-			this.$root.$on('openWorkflowDialog', async () => {
-				this.workflowOpenDialogVisible = true;
-			});
 		},
 	});
 </script>
@@ -514,11 +508,16 @@ export default mixins(
 .el-menu-item {
 	a {
 		color: #666;
+
+		&.primary-item {
+			color: $--color-primary;
+			vertical-align: baseline;
+		}
 	}
 
 	&.logo-item {
 		background-color: $--color-primary !important;
-		height: 65px;
+		height: $--header-height;
 
 		.icon {
 			position: relative;
@@ -560,10 +559,10 @@ a.logo {
 
 .side-menu-wrapper {
 	height: 100%;
-	width: 65px;
+	width: $--sidebar-width;
 
 	&.expanded {
-		width: 200px;
+		width: $--sidebar-expanded-width;
 	}
 }
 
