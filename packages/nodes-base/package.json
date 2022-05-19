@@ -616,7 +616,7 @@
     "cron": "^1.7.2",
     "eventsource": "^1.0.7",
     "fflate": "^0.6.9",
-    "formidable": "^1.2.1",
+    "formidable": "^3.2.4",
     "get-system-fonts": "^2.0.2",
     "glob-promise": "^3.4.0",
     "gm": "^1.23.1",
