@@ -106,7 +106,8 @@ checked out and set up:
 
 1. Install all dependencies of all modules and link them together:
 	```
-	lerna bootstrap --hoist
+	npm install -g lerna
+lerna bootstrap --hoist --no-ci
 	```
 
 1. Build all the code:
