@@ -20,7 +20,7 @@ COPY packages/workflow/ ./packages/workflow/
 RUN rm -rf node_modules packages/*/node_modules packages/*/dist
 
 RUN npm install --production --loglevel notice
-RUN lerna bootstrap --hoist -- --production
+RUN lerna bootstrap --hoist --no-ci -- --production
 RUN npm run build
 
 
