@@ -104,7 +104,7 @@ export async function buildFiles (options?: IBuildOptions): Promise<string> {
 		process.on('exit', () => {
 			buildProcess.kill();
 		});
-	} catch (error) {
+	} catch (error: Error | any) {
 		let errorMessage = error.message;
 
 		if (error.stdout !== undefined) {
