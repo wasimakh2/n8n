@@ -78,7 +78,7 @@ export class New extends Command {
 
 				sourceFolder = 'credentials';
 				defaultName = 'My Service API';
-			}
+			} // Add type assertion for 'error'
 
 			// Ask additional questions to know with what values the
 			// variables in the template file should be replaced with

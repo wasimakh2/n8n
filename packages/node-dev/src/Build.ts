@@ -90,6 +90,7 @@ export async function buildFiles (options?: IBuildOptions): Promise<string> {
 
 	let buildProcess: ChildProcess;
 	try {
+	let error: any;
 		buildProcess = spawn('node', buildCommand.split(' '), { windowsVerbatimArguments: true, cwd: process.cwd() });
 
 		// Forward the output of the child process to the main one
@@ -104,7 +105,7 @@ export async function buildFiles (options?: IBuildOptions): Promise<string> {
 		process.on('exit', () => {
 			buildProcess.kill();
 		});
-	} catch (error) {
+	} catch (error: any) {
 		let errorMessage = error.message;
 
 		if (error.stdout !== undefined) {
