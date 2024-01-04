@@ -16,7 +16,8 @@
     "watch": "lerna run --parallel watch",
     "webhook": "./packages/cli/bin/n8n webhook",
     "worker": "./packages/cli/bin/n8n worker"
-  },
+    "@types/lodash.get": "^4.14.167",
+  "devDependencies": {,
   "devDependencies": {
     "lerna": "^3.13.1",
     "rimraf": "^3.0.2",
