@@ -17,7 +17,7 @@
     "webhook": "./packages/cli/bin/n8n webhook",
     "worker": "./packages/cli/bin/n8n worker"
     },
-    "@types/express": "^4.20.0",
+    "@types/express": "^4.17.6",
   "devDependencies": {
     "lerna": "^3.13.1",
     "rimraf": "^3.0.2",
