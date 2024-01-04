@@ -105,14 +105,15 @@ export async function buildFiles (options?: IBuildOptions): Promise<string> {
 			buildProcess.kill();
 		});
 	} catch (error) {
-		let errorMessage = error.message;
+		console.log(`\nGOT ERROR: "${(error as any).message}"`);
 
 		if (error.stdout !== undefined) {
 			errorMessage = `${errorMessage}\nGot following output:\n${error.stdout}`;
 		}
+		console.log((error as any).stack);
 
 		// Remove the tmp tsconfig file
-		tsconfigData.cleanup();
+		throw new Error(errorMessage);
 
 		throw new Error(errorMessage);
 	}
