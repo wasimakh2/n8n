@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/n8n-io/n8n.git"
   },
-  "main": "dist/src/index",
+  "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
     "dev": "npm run watch",
@@ -45,7 +45,7 @@
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
-    },
+      },
     "testURL": "http://localhost/",
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "testPathIgnorePatterns": [
