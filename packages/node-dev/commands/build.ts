@@ -48,7 +48,7 @@ export class Build extends Command {
 
 			this.log(`The nodes got build and saved into the following folder:\n${outputDirectory}`);
 
-		} catch (error) {
+		} catch (error: any) {
 			this.log(`\nGOT ERROR: "${error.message}"`);
 			this.log('====================================');
 			this.log(error.stack);
