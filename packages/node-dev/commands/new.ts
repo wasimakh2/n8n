@@ -18,7 +18,7 @@ export class New extends Command {
 		`$ n8n-node-dev new`,
 	];
 
-	async run() {
+	async run(): Promise<void> {
 
 		try {
 			this.log('\nCreate new credentials/node');
@@ -61,7 +61,7 @@ export class New extends Command {
 					],
 				};
 
-				const nodeTypeAnswers = await inquirer.prompt(nodeTypeQuestion);
+				const nodeTypeAnswers: {nodeType: string} = await inquirer.prompt(nodeTypeQuestion);
 
 				// Choose a the template-source-file depending on user input.
 				sourceFolder = 'execute';
@@ -101,7 +101,7 @@ export class New extends Command {
 				});
 			}
 
-			const additionalAnswers = await inquirer.prompt(additionalQuestions as inquirer.QuestionCollection);
+			const additionalAnswers: {name: string, description: string} = await inquirer.prompt(additionalQuestions as inquirer.QuestionCollection);
 
 			const nodeName = additionalAnswers.name;
 
@@ -151,7 +151,7 @@ export class New extends Command {
 			this.log('====================================');
 
 			this.log('Node got created: ' + destinationFilePath);
-		} catch (error) {
+		} catch (error: Error) {
 			this.log(`\nGOT ERROR: "${error.message}"`);
 			this.log('====================================');
 			this.log(error.stack);
