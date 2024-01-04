@@ -32,6 +32,7 @@
     "@types/lodash.get": "^4.4.8",
     "@types/jest": "^26.0.13",
     "@types/lodash.get": "*",
+    "@types/lodash": "^4.14.177",
     "@types/mime-types": "^2.1.0",
     "@types/node": "^14.14.40",
     "@types/request-promise-native": "~1.0.15",
