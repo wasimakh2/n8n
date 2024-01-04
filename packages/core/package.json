@@ -63,7 +63,7 @@
     "testPathIgnorePatterns": [
       "/dist/",
       "/node_modules/"
-    ],
+    ,
     ],
     "moduleFileExtensions": [
       "ts",
