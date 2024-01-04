@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es2019",
+		"target": "es2020",
 		"module": "esnext",
 		"noImplicitAny": true,
 		"removeComments": true,
@@ -44,3 +44,4 @@
 		"dist"
 	]
 }
+"moduleResolution": "node",

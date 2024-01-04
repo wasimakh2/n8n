@@ -16,7 +16,7 @@
 		"preserveConstEnums": true,
 		"declaration": true,
 		"outDir": "./dist/",
-		"target": "es2017",
+		"target": "es2020",
 		"sourceMap": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true
@@ -34,4 +34,5 @@
 		"node_modules/**/*",
 		"**/*.spec.ts"
 	]
+"moduleResolution": "node",
 }
