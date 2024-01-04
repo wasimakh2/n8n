@@ -151,7 +151,7 @@ export class New extends Command {
 			this.log('====================================');
 
 			this.log('Node got created: ' + destinationFilePath);
-		} catch (error) {
+		} catch (error: any) {
 			this.log(`\nGOT ERROR: "${error.message}"`);
 			this.log('====================================');
 			this.log(error.stack);

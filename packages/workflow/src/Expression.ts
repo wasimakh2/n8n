@@ -86,7 +86,7 @@ export class Expression {
 				}
 			}
 			return returnValue;
-		} catch (e) {
+		} catch (e: Error | any) {
 			throw new Error(`Expression is not valid: ${e.message}`);
 		}
 	}
