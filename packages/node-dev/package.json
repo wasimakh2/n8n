@@ -20,7 +20,7 @@
   },
   "scripts": {
     "dev": "npm run watch",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "echo \"Building project...\" && rm -rf dist && tsc -b && oclif-dev manifest",
     "tslint": "tslint -p tsconfig.json -c tslint.json",

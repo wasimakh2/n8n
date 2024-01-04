@@ -1,12 +1,12 @@
 # 1. Create an image to build n8n
-FROM node:14.15-alpine as builder
+FROM node:14.17.0
 
 # Update everything and install needed dependencies
 USER root
 
 # Install all needed dependencies
 RUN apk --update add --virtual build-dependencies python build-base ca-certificates && \
-	npm_config_user=root npm install -g lerna
+	npm_config_user=root npm install -g lerna@4.1.0@4.1.0
 
 WORKDIR /data
 
@@ -19,7 +19,7 @@ COPY packages/nodes-base/ ./packages/nodes-base/
 COPY packages/workflow/ ./packages/workflow/
 RUN rm -rf node_modules packages/*/node_modules packages/*/dist
 
-RUN npm install --production --loglevel notice
+RUN npm install
 RUN lerna bootstrap --hoist -- --production
 RUN npm run build
 

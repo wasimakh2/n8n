@@ -12,7 +12,8 @@
 		"removeComments": true,
 		"strictNullChecks": true,
 		"strict": true,
-		"preserveConstEnums": true,
+		"declarationMap": true,
+    "preserveConstEnums": true,
 		"declaration": true,
 		"outDir": "./dist/",
 		"target": "es2017",
@@ -22,11 +23,11 @@
 		"**/*.d.ts",
 		"commands/**/*",
 		"index.ts",
-		"src/**/*"
+		"src/**/*.ts"
 	],
 	"exclude": [
 		"dist",
 		"node_modules/**/*",
-		"**/*.spec.ts"
+		"**/*.test.ts"
 	]
 }

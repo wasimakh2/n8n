@@ -4,7 +4,7 @@
   "homepage": "https://n8n.io",
   "scripts": {
     "bootstrap": "lerna bootstrap --hoist --no-ci",
-    "build": "lerna exec npm run build",
+    "build": "tsc",
     "dev": "lerna exec npm run dev --parallel",
     "clean:dist": "lerna exec -- rimraf ./dist",
     "optimize-svg": "find ./packages -name '*.svg' -print0 | xargs -0 -P16 -L20 npx svgo",
@@ -18,9 +18,9 @@
     "worker": "./packages/cli/bin/n8n worker"
   },
   "devDependencies": {
-    "lerna": "^3.13.1",
-    "rimraf": "^3.0.2",
-    "run-script-os": "^1.0.7"
+    "lerna": "^4.0.0",
+    "rimraf": "^3.0.0",
+    "run-script-os": "^1.0.0"
   },
   "postcss": {}
 }
